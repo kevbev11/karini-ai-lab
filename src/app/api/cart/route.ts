@@ -2,7 +2,7 @@ import dbConnect from '@/lib/dbConnect';
 import CartItem from '@/models/CartItem';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   await dbConnect();
   const items = await CartItem.find();
   return NextResponse.json(items);
