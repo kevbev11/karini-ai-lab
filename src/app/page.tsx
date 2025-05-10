@@ -3,13 +3,28 @@
 import { useEffect, useState } from 'react';
 import axios from "axios";
 
+interface Item {
+  Title: string;
+  "Variant SKU": string;
+  "Variant Price": string;
+  "Image Src": string;
+}
+
+interface CartItem {
+  title: string;
+  sku: string;
+  price: string;
+  image: string;
+  _id?: string;
+}
+
 export default function HomePage() {
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
   const [cartOpen, setCartOpen] = useState(false);
-  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const [response, setResponse] = useState<string>("");
   const [value, setValue] = useState<string>("");
@@ -21,9 +36,9 @@ export default function HomePage() {
     try {
       const res = await axios.post("/api/chat", { question: value });
       setResponse(res.data.reply);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Chat error:", err);
-      if (err.response?.data?.error) {
+      if (axios.isAxiosError(err) && err.response?.data?.error) {
         setResponse("❌ " + err.response.data.error);
       } else {
         setResponse("Something went wrong with the AI response.");
@@ -34,10 +49,10 @@ export default function HomePage() {
   useEffect(() => {
     fetch('/api/items')
       .then(res => res.json())
-      .then(data => {
+      .then((data: Item[]) => { 
         console.log('Fetched data:', data);
         const filtered = data.filter(
-          (item: any) =>
+          (item: Item) =>
             item["Title"] &&
             item["Variant SKU"] &&
             item["Variant Price"] &&

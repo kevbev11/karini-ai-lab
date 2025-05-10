@@ -46,7 +46,7 @@ npm install
 Create a .env.local file in the root with:
 
 ```bash
-MONGODB_URI="your_mongodb_atlas_uri"
+MONGODB_URI="Ask me for the Mongo Atlas URI"
 OPEN_AI_KEY="Ask me for the OpenAI API key"
 ```
 
