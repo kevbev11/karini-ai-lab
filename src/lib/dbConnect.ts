@@ -1,23 +1,36 @@
 import mongoose from 'mongoose';
-require('dotenv').config();
+import dotenv from 'dotenv';
+
+dotenv.config(); // Replaces the forbidden require()
+
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
   throw new Error('MONGODB_URI is not defined');
 }
 
-let cached = (global as any).mongoose || { conn: null, promise: null };
-(global as any).mongoose = cached;
+// Define a proper type for global.mongoose
+type MongooseCache = {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+};
+
+// Use `const` instead of `let` and avoid `any`
+const globalWithMongoose = global as typeof globalThis & {
+  mongoose: MongooseCache;
+};
+
+globalWithMongoose.mongoose ||= { conn: null, promise: null };
 
 export default async function dbConnect() {
-  if (cached.conn) return cached.conn;
+  if (globalWithMongoose.mongoose.conn) return globalWithMongoose.mongoose.conn;
 
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI as string, {
+  if (!globalWithMongoose.mongoose.promise) {
+    globalWithMongoose.mongoose.promise = mongoose.connect(MONGODB_URI as string, {
       bufferCommands: false,
-    }).then((mongoose) => mongoose);
+    });
   }
 
-  cached.conn = await cached.promise;
-  return cached.conn;
+  globalWithMongoose.mongoose.conn = await globalWithMongoose.mongoose.promise;
+  return globalWithMongoose.mongoose.conn;
 }
