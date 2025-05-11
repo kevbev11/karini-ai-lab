@@ -39,7 +39,7 @@ export default function HomePage() {
     } catch (err: unknown) {
       console.error("Chat error:", err);
       if (axios.isAxiosError(err) && err.response?.data?.error) {
-        setResponse("❌ " + err.response.data.error);
+        setResponse(err.response.data.error);
       } else {
         setResponse("Something went wrong with the AI response.");
       }
@@ -47,7 +47,7 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    fetch('/api/items')
+    fetch('/data.json')
       .then(res => res.json())
       .then((data: Item[]) => { 
         console.log('Fetched data:', data);
