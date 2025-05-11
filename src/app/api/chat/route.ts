@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { promises as fs } from 'fs';
 import { NextResponse } from 'next/server';
+import path from 'path';
 
 const apiKey = process.env.OPEN_AI_KEY;
 const openai = new OpenAI({ apiKey });
@@ -13,8 +14,9 @@ interface Product {
 
 export async function POST(req: Request) {
     const { question } = await req.json();
-    const fileContents = await fs.readFile('./public/data.json', 'utf-8');
-    const products = JSON.parse(fileContents);
+    const filePath = path.join(process.cwd(), 'public', 'data.json');
+    const fileContents = await fs.readFile(filePath, 'utf-8');
+    const products: Product[] = JSON.parse(fileContents);
 
     const productText = (products as Product[]).map((p) =>
         `Title: ${p["Title"]}, SKU: ${p["Variant SKU"]}, Price: $${p["Variant Price"]}`
