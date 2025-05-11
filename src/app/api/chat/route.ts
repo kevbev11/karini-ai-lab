@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import path from 'path';
 import { promises as fs } from 'fs';
 import { NextResponse } from 'next/server';
 
