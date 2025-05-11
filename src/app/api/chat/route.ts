@@ -14,9 +14,7 @@ interface Product {
 
 export async function POST(req: Request) {
     const { question } = await req.json();
-
-    const filePath = path.join(process.cwd(), 'data', 'data.json');
-    const fileContents = await fs.readFile(filePath, 'utf-8');
+    const fileContents = await fs.readFile('./public/data.json', 'utf-8');
     const products = JSON.parse(fileContents);
 
     const productText = (products as Product[]).map((p) =>
@@ -26,7 +24,7 @@ export async function POST(req: Request) {
     // Send to OpenAI
     const response = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
-    max_tokens: 500,
+    max_tokens: 300,
     messages: [
         {
         role: "system",
